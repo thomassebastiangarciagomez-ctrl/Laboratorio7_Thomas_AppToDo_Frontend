@@ -1,74 +1,36 @@
+import { request } from "./http";
+
 const API_URL = "http://localhost:8080/api/v1/tasks";
 
 /**
- * 
- * @param {*} response 
- * @returns 
+ * Todas las operaciones son protegidas: el cliente HTTP agrega el token de la sesión en memoria.
  */
-async function handleResponse(response) {
-    if (!response.ok) {
-        let message = `Error ${response.status}`;
-        try {
-            const data = await response.json();
-            message = data.message || message;
-        } catch {}
-        throw new Error(message);
-    }
+export function getTasks() {
+    return request(API_URL);
+}
 
-    if (response.status === 204) {
-        return null;
-    }
-
-    return response.json();
+export function getTask(id) {
+    return request(`${API_URL}/${id}`);
 }
 
 /**
- * 
+ * @param {*} task
  */
-export async function getTasks() {
-    const response = await fetch(API_URL)
-    return handleResponse(response)
-}
-
-export async function getTask(id) {
-    const response = await fetch(`${API_URL}/${id}`)
-    return handleResponse(response)
+export function createTask(task) {
+    return request(API_URL, { method: "POST", body: task });
 }
 
 /**
- * 
- * @param {*} task 
+ * @param {*} id
+ * @param {*} task
  */
-export async function createTask(task) {
-    const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(task)
-    })
-    return handleResponse(response)
+export function updateTask(id, task) {
+    return request(`${API_URL}/${id}`, { method: "PUT", body: task });
 }
 
 /**
- * 
- * @param {*} id 
- * @param {*} task 
+ * @param {*} id
  */
-export async function updateTask(id, task) {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(task)
-    })
-    return handleResponse(response)
-}
-
-/**
- * 
- * @param {*} id 
- */
-export async function deleteTask(id) {
-    const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-    });
-    return handleResponse(response)
+export function deleteTask(id) {
+    return request(`${API_URL}/${id}`, { method: "DELETE" });
 }
